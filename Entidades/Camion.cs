@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entidades
 {
@@ -17,7 +19,10 @@ namespace Entidades
 
         public bool Activo { get; set; }
 
-        [StringLength(450)]
+        [StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
+
+        [JsonIgnore]
+        public ApplicationUser Usuario { get; set; }
     }
 }

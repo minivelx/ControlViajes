@@ -28,6 +28,14 @@ namespace Entidades
         [Required, ForeignKey("SedeDestino")]
         public int IdDestino { get; set; }
 
+        [Required, StringLength(20)]
+        public String NumeroManifiesto { get; set; }
+
+        [Required, StringLength(20)]
+        public String NumeroCuenta { get; set; }
+
+        public decimal ValorAnticipo { get; set; }
+
         public DateTime ? InicioRuta { get; set; }
 
         public DateTime ? FinRuta { get; set; }
@@ -45,7 +53,7 @@ namespace Entidades
 
         public String Placa { get { return Camion?.Placa; } }
 
-        public String NombreConductor { get { return Coductor?.Nombre; } }
+        public String NombreConductor { get { return Conductor?.Nombre; } }
 
         public String NombreCliente { get { return Cliente?.Nombre; } }
 
@@ -55,16 +63,22 @@ namespace Entidades
 
         public DateTime FechaRegistro { get; set; }
 
+        [StringLength(450), ForeignKey("Usuario")]
+        public string UsuarioRegistro { get; set; }
+
+
         [JsonIgnore]
         public Camion Camion { get; set; }
         [JsonIgnore]
-        public ApplicationUser Coductor { get; set; }
+        public ApplicationUser Conductor { get; set; }
         [JsonIgnore]
         public Cliente Cliente { get; set; }
         [JsonIgnore]
         public Sede SedeOrigen { get; set; }
         [JsonIgnore]
         public Sede SedeDestino { get; set; }
+        [JsonIgnore]
+        public ApplicationUser Usuario { get; set; }
 
     }
 }
