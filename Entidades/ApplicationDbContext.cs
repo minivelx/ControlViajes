@@ -27,14 +27,13 @@ namespace Entidades
         public DbSet<Camion> Camiones { get; set; }
         public DbSet<Sede> Sedes { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
-        public DbSet<SedeXCliente> SedesXClientes { get; set; }
         public DbSet<Viaje> Viajes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<SedeXCliente>().HasKey(k => new { k.IdSede, k.IdCliente });
+            //modelBuilder.Entity<SedeXCliente>().HasKey(k => new { k.IdSede, k.IdCliente });
 
             //Custom Identity Tables
             modelBuilder.Entity<ApplicationUser>().ToTable("Usuarios");
