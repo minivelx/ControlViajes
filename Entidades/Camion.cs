@@ -19,7 +19,9 @@ namespace Entidades
 
         public bool Activo { get; set; }
 
-        [StringLength(450), ForeignKey("Usuario")]
+        public string NombreUsuarioRegistro { get { return Usuario?.Nombre; } }
+
+        [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
 
         [JsonIgnore]

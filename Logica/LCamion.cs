@@ -7,6 +7,10 @@ namespace Logica
 {
     public class LCamion
     {
+        public static List<Camion> ConsultarCamiones(ApplicationDbContext _context)
+        {
+            return _context.Camiones.ToList();
+        }
 
         public static List<Camion> ConsultarCamionesActivos(ApplicationDbContext _context)
         {
@@ -26,6 +30,8 @@ namespace Logica
         public static void GuardarCamion(Camion Camion, ApplicationDbContext _context)
         {
             Camion.Activo = true;
+            Camion.Placa = Camion.Placa.ToUpper();
+            Camion.Remolque = Camion.Remolque.ToUpper();
             _context.Camiones.Add(Camion);
             _context.SaveChanges();
         }

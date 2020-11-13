@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ControlViajes;
 using Entidades;
 using Logica;
 using Microsoft.AspNetCore.Mvc;
 
-
-
 namespace Convidarte.Controllers
 {
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrador")]
     [Route("api/[controller]")]
-    [ApiController]
+    [Produces("application/json")]
     public class CamionesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +26,23 @@ namespace Convidarte.Controllers
         {
             try
             {
+                List<Camion> lstCamiones = LCamion.ConsultarCamiones(_context);
+                return Json(new { success = true, message = lstCamiones });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
+        // GET: api/Camiones/activos
+        [Route("Activos")]
+        [HttpGet]
+        public async Task<IActionResult> GetCamionesActivos()
+        {
+            try
+            {
                 List<Camion> lstCamiones = LCamion.ConsultarCamionesActivos(_context);
                 return Json(new { success = true, message = lstCamiones });
             }
@@ -38,7 +55,7 @@ namespace Convidarte.Controllers
 
         // GET: api/Camiones/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCamion([FromRoute] int id)
+        public async Task<IActionResult> GetCamionById([FromRoute] int id)
         {
             try
             {
@@ -58,19 +75,20 @@ namespace Convidarte.Controllers
             }
         }
 
-        // PUT: api/Camiones/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCamion([FromRoute] int id, [FromBody] Camion Camion)
+        // POST: api/Camiones
+        [HttpPost]
+        public async Task<IActionResult> PostCamion([FromBody] Camion Camion)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = ErrorModelValidation.ShowError(new SerializableError(ModelState).Values) });
+            }
+
             try
             {
-
-                if (Camion.Id != id)
-                {
-                    return Json(new { success = false, message = "No se pude editar el id del Camion" });
-                }
-
-                return Json(new { success = true, message = "Camion editado correctamente" });
+                LCamion.GuardarCamion(Camion, _context);
+                return Json(new { success = true, message = "Camión guardado correctamente" });
             }
             catch (Exception exc)
             {
@@ -79,14 +97,31 @@ namespace Convidarte.Controllers
             }
         }
 
-        // POST: api/Camiones
-        [HttpPost]
-        public async Task<IActionResult> PostCamion([FromBody] Camion Camion)
+        // PUT: api/Camiones/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCamion([FromRoute] int id, [FromBody] Camion Camion)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = ErrorModelValidation.ShowError(new SerializableError(ModelState).Values) });
+            }
+
             try
             {
-                LCamion.GuardarCamion(Camion, _context);
-                return Json(new { success = true, message = "Camion guardado correctamente" });
+
+                if (Camion.Id != id)
+                {                    
+                    return Json(new { success = false, message = "No se pude editar el id del Camión" });
+                }
+
+                if (!Camion.Activo)
+                {
+                    return Json(new { success = false, message = "No se pude editar un registro como inactivo" });
+                }
+
+                LCamion.EditarCamion(Camion, _context);
+                return Json(new { success = true, message = "Camión editado correctamente" });
             }
             catch (Exception exc)
             {
@@ -102,7 +137,7 @@ namespace Convidarte.Controllers
             try
             {
                 LCamion.EliminarCamion(id, _context);
-                return Json(new { success = true, message = "Camion eliminado correctamente" });
+                return Json(new { success = true, message = "Camión eliminado correctamente" });
             }
             catch (Exception exc)
             {
