@@ -72,6 +72,15 @@ namespace ControlViajes
             });
 
             services.AddMvc().AddJsonOptions(ConfigureJson);
+
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Test Title",
+                Description = "Test Description"               
+                
+            }));
+
             services.AddCors();
         }
 
@@ -87,6 +96,13 @@ namespace ControlViajes
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API test Version 1");
+            });
 
             app.UseCors("CorsPolicy");
             app.UseAuthentication();
