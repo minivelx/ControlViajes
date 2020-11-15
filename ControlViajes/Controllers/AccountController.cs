@@ -286,6 +286,44 @@ namespace ControlViajes.Controllers
             }
         }
 
+        [Route("EditUser/{id}")]
+        [HttpPut]
+        public async Task<IActionResult> EditUser([FromRoute] string id, [FromBody] UserInfo model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = ErrorModelValidation.ShowError(new SerializableError(ModelState).Values) });
+            }
+
+            try
+            {
+                var result = _userManager.FindByIdAsync(id).Result;
+
+                if (result != null)
+                {
+                    var Usuario = _context.Users.Where(x => x.Id == id).FirstOrDefault();
+                    Usuario.Nombre = model.Nombre;
+                    Usuario.Activo = model.Activo;
+                    _context.SaveChanges();
+
+                    await AsignarRolAsync(_context, Usuario, model.LstRoles);
+
+                    return Json(new { success = true, message = "Registro editado correctamente." });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Ha ocurrido un error. No se ha encontrado {0} {1} con el código especificado." });
+                }
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error! " + ErrorMsg });
+            }
+
+        }
+
         private IActionResult BuildToken(ApplicationUser Usuario)
         {
             try
