@@ -288,7 +288,7 @@ namespace ControlViajes.Controllers
 
         [Route("EditUser/{id}")]
         [HttpPut]
-        public async Task<IActionResult> EditUser([FromRoute] string id, [FromBody] UserInfo model)
+        public async Task<IActionResult> EditUser([FromRoute] string id, [FromBody] Usuario model)
         {
 
             if (!ModelState.IsValid)
@@ -307,7 +307,7 @@ namespace ControlViajes.Controllers
                     Usuario.Activo = model.Activo;
                     _context.SaveChanges();
 
-                    await AsignarRolAsync(_context, Usuario, model.LstRoles);
+                    await AsignarRolAsync(_context, Usuario, model.Roles);
 
                     return Json(new { success = true, message = "Registro editado correctamente." });
                 }
