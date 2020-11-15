@@ -20,7 +20,7 @@ namespace Entidades
 
         public bool Activo { get; set; }
 
-        public string NombreCliente { get { return NombreCliente; } }
+        public string NombreCliente { get { return Cliente?.Nombre; } }
 
         [JsonIgnore]
         public Cliente Cliente { get; set; }

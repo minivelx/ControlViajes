@@ -9,17 +9,17 @@ namespace Logica
     {
         public static List<Cliente> ConsultarClientes(ApplicationDbContext _context)
         {
-            return _context.Clientes.ToList();
+            return _context.Clientes.Include(x=> x.lstSedes).Include(x=> x.Usuario).ToList();
         }
 
         public static List<Cliente> ConsultarClientesActivos(ApplicationDbContext _context)
         {
-            return _context.Clientes.Where(x => x.Activo).ToList();
+            return _context.Clientes.Where(x => x.Activo).Include(x => x.lstSedes).Include(x => x.Usuario).ToList();
         }
 
         public static Cliente ConsultarClientePorId(int id, ApplicationDbContext _context)
         {
-            return _context.Clientes.Where(x => x.Id == id).FirstOrDefault();
+            return _context.Clientes.Where(x => x.Id == id).Include(x => x.lstSedes).Include(x => x.Usuario).FirstOrDefault();
         }
 
         public static void GuardarCliente(Cliente Cliente, ApplicationDbContext _context)

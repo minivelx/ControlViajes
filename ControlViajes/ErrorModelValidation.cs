@@ -28,5 +28,29 @@ namespace ControlViajes
 
             return string.Join(". " + Environment.NewLine, lstErrores);
         }
+
+        private static string PasswordError(string errorCode)
+        {
+            if (errorCode == "PasswordTooShort")
+            {
+                return "La contraseña debe contener al menos 6 caracteres. ";
+            }
+            else if (errorCode == "PasswordRequiresNonAlphanumeric")
+            {
+                return "La contraseña debe contener al menos un caracter no alfanúmerico. ";
+            }
+            else if (errorCode == "PasswordRequiresLower")
+            {
+                return "La contraseña debe contener al menos un caracter en minúscula. ";
+            }
+            else if (errorCode == "PasswordRequiresUpper")
+            {
+                return "La contraseña debe contener al menos un caracter en mayúscula. ";
+            }
+            else
+            {
+                return "El correo ya ha sido registrado. " + "Error Code (" + errorCode + ")";
+            }
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace ControlViajes
                     ValidIssuer = Configuration.GetConnectionString("serverDomain"),
                     ValidAudience = Configuration.GetConnectionString("serverDomain"),
                     IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(Configuration.GetConnectionString("Key").ToString())),
+                    Encoding.UTF8.GetBytes(Configuration.GetConnectionString("Llave_secreta").ToString())),
                     ClockSkew = TimeSpan.Zero
                 });
 

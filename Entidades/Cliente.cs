@@ -18,12 +18,12 @@ namespace Entidades
         [StringLength(100), Required(ErrorMessage = "El campo {0} es obligatorio")]
         public string Nombre { get; set; }
 
-        public string NombreUsuarioRegistro { get { return Usuario?.Nombre; } }
+        public bool Activo { get; set; }
 
         [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
 
-        public bool Activo { get; set; }
+        public string NombreUsuarioRegistro { get { return Usuario?.Nombre; } }
 
         public List<Sede> lstSedes { get; set; }
 
