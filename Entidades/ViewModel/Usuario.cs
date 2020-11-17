@@ -21,6 +21,9 @@ namespace Entidades
 
         public bool Activo { get; set; }
 
+        public string NombreCliente { get; set; }
+
         public List<RolViewModel> Roles { get; set; }
+
     }
 }

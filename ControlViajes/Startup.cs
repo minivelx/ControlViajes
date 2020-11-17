@@ -24,6 +24,8 @@ namespace ControlViajes
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
@@ -97,14 +99,19 @@ namespace ControlViajes
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
+            app.UseCors("CorsPolicy");
 
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<MessageHub>("/message");
+            });
+
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API test Version 1");
             });
-
-            app.UseCors("CorsPolicy");
+            
             app.UseAuthentication();
             app.UseStaticFiles();
             app.UseDefaultFiles();
