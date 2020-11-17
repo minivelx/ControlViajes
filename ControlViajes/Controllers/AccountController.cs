@@ -51,7 +51,8 @@ namespace ControlViajes.Controllers
             try
             {
                 var Usuarios = _userManager.Users.ToList();
-                List<Usuario> Users = Usuarios.Select( x => new Usuario { Id = x.Id, Nombre = x.Nombre, Email = x.Email, Activo = x.Activo }).ToList();
+                // Es posible que se tenga que realizar un foreach para setear la propiedad Cliente a cada Usuario!
+                List<Usuario> Users = Usuarios.Select( x => new Usuario { Id = x.Id, Nombre = x.Nombre, Email = x.Email, Activo = x.Activo, NombreCliente = x.NombreCliente }).ToList();
                 return Json(new { success = true, message = Users });                
             }
             catch (Exception exc)
@@ -99,7 +100,7 @@ namespace ControlViajes.Controllers
 
             try
             {
-                var user = new ApplicationUser { UserName = model.Cedula, Nombre = model.Nombre, Email = model.Email, PhoneNumber = model.Celular, Cedula = model.Cedula, Activo = true };
+                var user = new ApplicationUser { UserName = model.Cedula, Nombre = model.Nombre, Email = model.Email, PhoneNumber = model.Celular, Cedula = model.Cedula, Activo = true, IdCliente = model.IdCliente };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

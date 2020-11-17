@@ -24,6 +24,8 @@ namespace Entidades
 
         public string Celular { get; set; }
 
+        public int ? IdCliente { get; set; }
+
         public List<RolViewModel> Roles { get; set; }
     }
 }
