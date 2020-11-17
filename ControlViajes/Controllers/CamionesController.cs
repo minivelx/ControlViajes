@@ -115,11 +115,6 @@ namespace Convidarte.Controllers
                     return Json(new { success = false, message = "No se pude editar el id del Camión" });
                 }
 
-                if (!Camion.Activo)
-                {
-                    return Json(new { success = false, message = "No se pude editar un registro como inactivo" });
-                }
-
                 LCamion.EditarCamion(Camion, _context);
                 return Json(new { success = true, message = "Camión editado correctamente" });
             }

@@ -115,11 +115,6 @@ namespace Convidarte.Controllers
                     return Json(new { success = false, message = "No se pude editar el id del Cliente" });
                 }
 
-                if (!Cliente.Activo)
-                {
-                    return Json(new { success = false, message = "No se pude editar un registro como inactivo" });
-                }
-
                 LCliente.EditarCliente(Cliente, _context);
                 return Json(new { success = true, message = "Cliente editado correctamente" });
             }

@@ -115,11 +115,6 @@ namespace Convidarte.Controllers
                     return Json(new { success = false, message = "No se pude editar el id de la Sede" });
                 }
 
-                if (!Sede.Activo)
-                {
-                    return Json(new { success = false, message = "No se pude editar un registro como inactivo" });
-                }
-
                 LSede.EditarSede(Sede, _context);
                 return Json(new { success = true, message = "Sede editada correctamente" });
             }
