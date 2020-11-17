@@ -41,6 +41,7 @@ namespace ControlViajes.Controllers
 
         [Route("Users")]
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
             if (!ModelState.IsValid)
@@ -51,8 +52,20 @@ namespace ControlViajes.Controllers
             try
             {
                 var Usuarios = _userManager.Users.ToList();
-                // Es posible que se tenga que realizar un foreach para setear la propiedad Cliente a cada Usuario!
-                List<Usuario> Users = Usuarios.Select( x => new Usuario { Id = x.Id, Nombre = x.Nombre, Email = x.Email, Activo = x.Activo, NombreCliente = x.NombreCliente }).ToList();
+                var Clientes = _context.Clientes.ToList();
+                Usuarios.ForEach(x => x.Cliente = x.IdCliente == null ? null : Clientes.Find(c=> c.Id == x.IdCliente));
+                List<Usuario> Users = Usuarios.Select( x => new Usuario { 
+                    Id = x.Id, 
+                    Nombre = x.Nombre, 
+                    Email = x.Email, 
+                    Cedula = x.Cedula, 
+                    Celular = x.PhoneNumber,
+                    Activo = x.Activo, 
+                    IdCliente = x.IdCliente,
+                    NombreCliente = x.NombreCliente,
+                    Roles = ObtenerRoles(x)
+                }).ToList();
+
                 return Json(new { success = true, message = Users });                
             }
             catch (Exception exc)
@@ -151,6 +164,20 @@ namespace ControlViajes.Controllers
             {
                 throw ex;
             }
+        }
+
+        private List<RolViewModel> ObtenerRoles(ApplicationUser user)
+        {
+            List<RolViewModel> lstResult = new List<RolViewModel>();
+            var Roles = _context.Roles.ToList();
+
+            foreach (var rol in Roles)
+            {
+                bool isInRole = _userManager.IsInRoleAsync(user, rol.Name).Result;
+                lstResult.Add(new RolViewModel { Nombre = rol.Name, Seleccionado = isInRole });
+            }
+
+            return lstResult;
         }
 
         [Route("ChangePassword")]

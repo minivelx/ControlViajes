@@ -24,7 +24,6 @@ namespace ControlViajes
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
 
             services.AddCors(options =>
             {
@@ -37,6 +36,8 @@ namespace ControlViajes
                 .Build()
                 );
             });
+
+            services.AddSignalR();
 
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("serverConnection"))
@@ -94,17 +95,18 @@ namespace ControlViajes
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCors("CorsPolicy");
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ContadorHub>("/contador");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("CorsPolicy");
-
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<MessageHub>("/message");
-            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ControlViajes.Controllers
@@ -14,9 +9,9 @@ namespace ControlViajes.Controllers
     public class MessageController : Controller
     {
 
-        private IHubContext<MessageHub> _hubContext;
+        private IHubContext<ContadorHub> _hubContext;
 
-        public MessageController(IHubContext<MessageHub> hubContext)
+        public MessageController(IHubContext<ContadorHub> hubContext)
         {
             _hubContext = hubContext;
         }
@@ -24,7 +19,7 @@ namespace ControlViajes.Controllers
         [HttpPost]
         public IActionResult Post()
         {
-            _hubContext.Clients.All.SendAsync("send", "Hello from the server");
+            _hubContext.Clients.All.SendAsync("clave", "Hello from the server");
             return Ok();
         }
     }
