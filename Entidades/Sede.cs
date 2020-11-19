@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entidades
 {
-    public class Sede
+    public class Sede : IEquatable<Sede>
     {
         [Key]
         public int Id { get; set; }
@@ -24,5 +25,15 @@ namespace Entidades
 
         [JsonIgnore]
         public Cliente Cliente { get; set; }
+
+        public bool Equals(Sede other)
+        {
+            return Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

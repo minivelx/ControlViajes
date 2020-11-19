@@ -32,6 +32,7 @@ namespace Logica
         public static void EditarCliente(Cliente Cliente, ApplicationDbContext _context)
         {
             _context.Entry(Cliente).State = EntityState.Modified;
+            EditarListaSedes(Cliente.Id, Cliente.lstSedes, _context);
             _context.SaveChanges();
         }
 
@@ -40,6 +41,22 @@ namespace Logica
             Cliente Cliente = ConsultarClientePorId(id, _context);
             Cliente.Activo = false;
             EditarCliente(Cliente, _context);
+        }
+
+        public static void EditarListaSedes(int idCliente, List<Sede> lstSedes, ApplicationDbContext _context)
+        {
+            var lstOld = _context.Sedes.AsNoTracking().Where(x => x.IdCliente == idCliente).ToList();
+            // Elimino las sedes que ya no se requieran 
+            var lstRemove = lstOld.Except(lstSedes).ToList();
+            if (lstRemove != null)
+                lstRemove.ForEach(x => x.Activo = false);
+            // Agrego las nuevas
+            var lstNew = lstSedes.Except(lstOld).ToList();
+            _context.Sedes.AddRange(lstNew);
+            // Edito las comunes
+            var lstInter = lstSedes.Intersect(lstOld).ToList();
+            lstInter.ForEach(x => LSede.EditarSede(x, _context));
+
         }
     }
 }

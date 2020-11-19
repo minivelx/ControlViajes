@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using ControlViajes;
 using Entidades;
 using Logica;
@@ -109,13 +110,17 @@ namespace Convidarte.Controllers
 
             try
             {
-
                 if (Cliente.Id != id)
                 {
                     return Json(new { success = false, message = "No se pude editar el id del Cliente" });
                 }
 
-                LCliente.EditarCliente(Cliente, _context);
+                using(var scope = new TransactionScope())
+                {
+                    LCliente.EditarCliente(Cliente, _context);
+                    scope.Complete();
+                }                
+                
                 return Json(new { success = true, message = "Cliente editado correctamente" });
             }
             catch (Exception exc)
