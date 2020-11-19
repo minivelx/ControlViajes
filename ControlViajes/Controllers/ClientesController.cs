@@ -21,13 +21,23 @@ namespace Convidarte.Controllers
             _context = context;
         }
 
+        public static TransactionScope CreateAsyncTransactionScope(IsolationLevel isolation = IsolationLevel.ReadCommitted)
+        {
+            var transactionOptions = new TransactionOptions
+            {
+                IsolationLevel = isolation,
+                Timeout = TransactionManager.MaximumTimeout
+            };
+            return new TransactionScope(TransactionScopeOption.Required, transactionOptions, TransactionScopeAsyncFlowOption.Enabled);
+        }
+
         // GET: api/Clientes
         [HttpGet]
         public async Task<IActionResult> GetClientes()
         {
             try
             {
-                List<Cliente> lstClientes = LCliente.ConsultarClientes(_context);
+                List<Cliente> lstClientes = await LCliente.ConsultarClientes(_context);
                 return Json(new { success = true, message = lstClientes });
             }
             catch (Exception exc)
@@ -44,7 +54,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                List<Cliente> lstClientes = LCliente.ConsultarClientesActivos(_context);
+                List<Cliente> lstClientes = await LCliente.ConsultarClientesActivos(_context);
                 return Json(new { success = true, message = lstClientes });
             }
             catch (Exception exc)
@@ -60,7 +70,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                Cliente Cliente = LCliente.ConsultarClientePorId(id, _context);
+                Cliente Cliente = await LCliente.ConsultarClientePorId(id, _context);
 
                 if (Cliente == null)
                 {
@@ -88,7 +98,7 @@ namespace Convidarte.Controllers
 
             try
             {
-                LCliente.GuardarCliente(Cliente, _context);
+                await LCliente.GuardarCliente(Cliente, _context);
                 return Json(new { success = true, message = "Cliente guardado correctamente" });
             }
             catch (Exception exc)
@@ -115,11 +125,11 @@ namespace Convidarte.Controllers
                     return Json(new { success = false, message = "No se pude editar el id del Cliente" });
                 }
 
-                using(var scope = new TransactionScope())
+                using (var scope = CreateAsyncTransactionScope())
                 {
-                    LCliente.EditarCliente(Cliente, _context);
+                    await LCliente.EditarCliente(Cliente, _context);
                     scope.Complete();
-                }                
+                }
                 
                 return Json(new { success = true, message = "Cliente editado correctamente" });
             }
@@ -136,7 +146,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                LCliente.EliminarCliente(id, _context);
+                await LCliente.EliminarCliente(id, _context);
                 return Json(new { success = true, message = "Cliente eliminado correctamente" });
             }
             catch (Exception exc)

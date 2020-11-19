@@ -42,7 +42,7 @@ namespace ControlViajes.Controllers
         [Route("Users")]
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetUsers()
+        public IActionResult GetUsers()
         {
             if (!ModelState.IsValid)
             {
@@ -53,20 +53,21 @@ namespace ControlViajes.Controllers
             {
                 var Usuarios = _userManager.Users.ToList();
                 var Clientes = _context.Clientes.ToList();
-                Usuarios.ForEach(x => x.Cliente = x.IdCliente == null ? null : Clientes.Find(c=> c.Id == x.IdCliente));
-                List<Usuario> Users = Usuarios.Select( x => new Usuario { 
-                    Id = x.Id, 
-                    Nombre = x.Nombre, 
-                    Email = x.Email, 
-                    Cedula = x.Cedula, 
+                Usuarios.ForEach(x => x.Cliente = x.IdCliente == null ? null : Clientes.Find(c => c.Id == x.IdCliente));
+                List<Usuario> Users = Usuarios.Select(x => new Usuario
+                {
+                    Id = x.Id,
+                    Nombre = x.Nombre,
+                    Email = x.Email,
+                    Cedula = x.Cedula,
                     Celular = x.PhoneNumber,
-                    Activo = x.Activo, 
+                    Activo = x.Activo,
                     IdCliente = x.IdCliente,
                     NombreCliente = x.NombreCliente,
                     Roles = ObtenerRoles(x)
                 }).ToList();
 
-                return Json(new { success = true, message = Users });                
+                return Json(new { success = true, message = Users });
             }
             catch (Exception exc)
             {
@@ -77,7 +78,7 @@ namespace ControlViajes.Controllers
 
         [Route("Users/{id}")]
         [HttpGet]
-        public async Task<IActionResult> GetUser([FromRoute] string id)
+        public IActionResult GetUser([FromRoute] string id)
         {
             if (!ModelState.IsValid)
             {
@@ -280,7 +281,7 @@ namespace ControlViajes.Controllers
 
         [Route("ListarPorRol/{NombreRol}")]
         [HttpGet]
-        public async Task<IActionResult> listarPickeadores([FromRoute] string NombreRol)
+        public IActionResult ListarPorRol([FromRoute] string NombreRol)
         {
             if (!ModelState.IsValid)
             {

@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-
+using System.Threading.Tasks;
 
 namespace ControlViajes
 {
@@ -49,6 +50,12 @@ namespace ControlViajes
             currentUser.FindAll(ClaimTypes.Role).ToList().ForEach(x => roles.Add(x.Value));
 
             return roles;
+        }
+
+        public static async Task ForEachAsync<T>(this List<T> enumerable, Action<T> action)
+        {
+            foreach (var item in enumerable)
+                await Task.Run(() => { action(item); }).ConfigureAwait(false);
         }
 
     }

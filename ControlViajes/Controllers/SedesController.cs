@@ -26,7 +26,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                List<Sede> lstSedes = LSede.ConsultarSedes(_context);
+                List<Sede> lstSedes = await LSede.ConsultarSedes(_context);
                 return Json(new { success = true, message = lstSedes });
             }
             catch (Exception exc)
@@ -43,7 +43,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                List<Sede> lstSedes = LSede.ConsultarSedesActivos(_context);
+                List<Sede> lstSedes = await LSede.ConsultarSedesActivos(_context);
                 return Json(new { success = true, message = lstSedes });
             }
             catch (Exception exc)
@@ -59,7 +59,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                Sede Sede = LSede.ConsultarSedePorId(id, _context);
+                Sede Sede = await LSede.ConsultarSedePorId(id, _context);
 
                 if (Sede == null)
                 {
@@ -87,7 +87,7 @@ namespace Convidarte.Controllers
 
             try
             {
-                LSede.GuardarSede(Sede, _context);
+                await LSede.GuardarSede(Sede, _context);
                 return Json(new { success = true, message = "Sede guardada correctamente" });
             }
             catch (Exception exc)
@@ -115,7 +115,7 @@ namespace Convidarte.Controllers
                     return Json(new { success = false, message = "No se pude editar el id de la Sede" });
                 }
 
-                LSede.EditarSede(Sede, _context);
+                await LSede.EditarSede(Sede, _context);
                 return Json(new { success = true, message = "Sede editada correctamente" });
             }
             catch (Exception exc)
@@ -131,7 +131,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                LSede.EliminarSede(id, _context);
+                await LSede.EliminarSede(id, _context);
                 return Json(new { success = true, message = "Sede eliminada correctamente" });
             }
             catch (Exception exc)
@@ -140,6 +140,5 @@ namespace Convidarte.Controllers
                 return Json(new { success = false, message = "Error!. " + ErrorMsg });
             }
         }
-
     }
 }

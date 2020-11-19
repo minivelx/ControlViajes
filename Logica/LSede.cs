@@ -2,44 +2,45 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Logica
 {
     public class LSede
     {
-        public static List<Sede> ConsultarSedes(ApplicationDbContext _context)
+        public static async Task<List<Sede>> ConsultarSedes(ApplicationDbContext _context)
         {
-            return _context.Sedes.ToList();
+            return await _context.Sedes.ToListAsync();
         }
 
-        public static List<Sede> ConsultarSedesActivos(ApplicationDbContext _context)
+        public static async Task<List<Sede>> ConsultarSedesActivos(ApplicationDbContext _context)
         {
-            return _context.Sedes.Where(x => x.Activo).ToList();
+            return await _context.Sedes.Where(x => x.Activo).ToListAsync();
         }
 
-        public static Sede ConsultarSedePorId(int id, ApplicationDbContext _context)
+        public static async Task<Sede> ConsultarSedePorId(int id, ApplicationDbContext _context)
         {
-            return _context.Sedes.Where(x => x.Id == id).FirstOrDefault();
+            return await _context.Sedes.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public static void GuardarSede(Sede Sede, ApplicationDbContext _context)
+        public static async Task GuardarSede(Sede Sede, ApplicationDbContext _context)
         {
             Sede.Activo = true;
             _context.Sedes.Add(Sede);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public static void EditarSede(Sede Sede, ApplicationDbContext _context)
+        public static async Task EditarSede(Sede Sede, ApplicationDbContext _context)
         {
             _context.Entry(Sede).State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public static void EliminarSede(int id, ApplicationDbContext _context)
+        public static async Task EliminarSede(int id, ApplicationDbContext _context)
         {
-            Sede Sede = ConsultarSedePorId(id, _context);
+            Sede Sede = await ConsultarSedePorId(id, _context);
             Sede.Activo = false;
-            EditarSede(Sede, _context);
+            await EditarSede(Sede, _context);
         }
     }
 }

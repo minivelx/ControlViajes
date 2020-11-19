@@ -26,7 +26,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                List<Viaje> lstViajes = LViaje.ConsultarViajes(_context);
+                List<Viaje> lstViajes = await LViaje.ConsultarViajes(_context);
                 return Json(new { success = true, message = lstViajes });
             }
             catch (Exception exc)
@@ -42,7 +42,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                Viaje Viaje = LViaje.ConsultarViajePorId(id, _context);
+                Viaje Viaje = await LViaje.ConsultarViajePorId(id, _context);
 
                 if (Viaje == null)
                 {
@@ -70,7 +70,7 @@ namespace Convidarte.Controllers
 
             try
             {
-                LViaje.GuardarViaje(Viaje, _context);
+                await LViaje.GuardarViaje(Viaje, _context);
                 return Json(new { success = true, message = "Registro guardado correctamente" });
             }
             catch (Exception exc)
@@ -103,7 +103,7 @@ namespace Convidarte.Controllers
                 //    return Json(new { success = false, message = "No se pude editar un registro como inactivo" });
                 //}
 
-                LViaje.EditarViaje(Viaje, _context);
+                await LViaje.EditarViaje(Viaje, _context);
                 return Json(new { success = true, message = "Registro editado correctamente" });
             }
             catch (Exception exc)

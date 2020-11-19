@@ -2,51 +2,52 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Logica
 {
     public class LCamion
     {
-        public static List<Camion> ConsultarCamiones(ApplicationDbContext _context)
+        public static async Task<List<Camion>> ConsultarCamiones(ApplicationDbContext _context)
         {
-            return _context.Camiones.ToList();
+            return await _context.Camiones.ToListAsync();
         }
 
-        public static List<Camion> ConsultarCamionesActivos(ApplicationDbContext _context)
+        public static async Task<List<Camion>> ConsultarCamionesActivos(ApplicationDbContext _context)
         {
-            return _context.Camiones.Where(x => x.Activo).ToList();
+            return await _context.Camiones.Where(x => x.Activo).ToListAsync();
         }
 
-        public static Camion ConsultarCamionPorId(int id, ApplicationDbContext _context)
+        public static async Task<Camion> ConsultarCamionPorId(int id, ApplicationDbContext _context)
         {
-            return _context.Camiones.Where(x => x.Id == id).FirstOrDefault();
+            return await _context.Camiones.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public static Camion ConsultarCamionPorPlaca(string placa, ApplicationDbContext _context)
+        public static async Task<Camion> ConsultarCamionPorPlaca(string placa, ApplicationDbContext _context)
         {
-            return _context.Camiones.Where(x => x.Placa == placa).FirstOrDefault();
+            return await _context.Camiones.Where(x => x.Placa == placa).FirstOrDefaultAsync();
         }
 
-        public static void GuardarCamion(Camion Camion, ApplicationDbContext _context)
+        public static async Task GuardarCamion(Camion Camion, ApplicationDbContext _context)
         {
             Camion.Activo = true;
             Camion.Placa = Camion.Placa.ToUpper();
             Camion.Remolque = Camion.Remolque.ToUpper();
             _context.Camiones.Add(Camion);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public static void EditarCamion(Camion Camion, ApplicationDbContext _context)
+        public static async Task EditarCamion(Camion Camion, ApplicationDbContext _context)
         {
             _context.Entry(Camion).State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public static void EliminarCamion(int id, ApplicationDbContext _context)
+        public static async Task EliminarCamion(int id, ApplicationDbContext _context)
         {
-            Camion Camion = ConsultarCamionPorId(id, _context);
+            Camion Camion = await ConsultarCamionPorId(id, _context);
             Camion.Activo = false;
-            EditarCamion(Camion, _context);
+            await EditarCamion(Camion, _context);
         }
     }
 }

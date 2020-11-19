@@ -26,7 +26,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                List<Camion> lstCamiones = LCamion.ConsultarCamiones(_context);
+                List<Camion> lstCamiones = await LCamion.ConsultarCamiones(_context);
                 return Json(new { success = true, message = lstCamiones });
             }
             catch (Exception exc)
@@ -43,7 +43,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                List<Camion> lstCamiones = LCamion.ConsultarCamionesActivos(_context);
+                List<Camion> lstCamiones = await LCamion.ConsultarCamionesActivos(_context);
                 return Json(new { success = true, message = lstCamiones });
             }
             catch (Exception exc)
@@ -59,7 +59,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                Camion Camion = LCamion.ConsultarCamionPorId(id, _context);
+                Camion Camion = await LCamion.ConsultarCamionPorId(id, _context);
 
                 if(Camion == null)
                 {
@@ -87,7 +87,7 @@ namespace Convidarte.Controllers
 
             try
             {
-                LCamion.GuardarCamion(Camion, _context);
+                await LCamion.GuardarCamion(Camion, _context);
                 return Json(new { success = true, message = "Camión guardado correctamente" });
             }
             catch (Exception exc)
@@ -115,7 +115,7 @@ namespace Convidarte.Controllers
                     return Json(new { success = false, message = "No se pude editar el id del Camión" });
                 }
 
-                LCamion.EditarCamion(Camion, _context);
+                await LCamion.EditarCamion(Camion, _context);
                 return Json(new { success = true, message = "Camión editado correctamente" });
             }
             catch (Exception exc)
@@ -131,7 +131,7 @@ namespace Convidarte.Controllers
         {
             try
             {
-                LCamion.EliminarCamion(id, _context);
+                await LCamion.EliminarCamion(id, _context);
                 return Json(new { success = true, message = "Camión eliminado correctamente" });
             }
             catch (Exception exc)
