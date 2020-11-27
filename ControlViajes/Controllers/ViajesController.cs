@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using ControlViajes;
 using Entidades;
 using Logica;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convidarte.Controllers
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrador")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class ViajesController : Controller
@@ -27,6 +29,23 @@ namespace Convidarte.Controllers
             try
             {
                 List<Viaje> lstViajes = await LViaje.ConsultarViajes(_context);
+                return Json(new { success = true, message = lstViajes });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
+        // GET: api/Viajes/misViajes        
+        [HttpGet("misViajes")]
+        public async Task<IActionResult> GetMisViajes()
+        {
+            try
+            {
+                string userId = User.getUserId();
+                List<Viaje> lstViajes = await LViaje.ConsultarMisViajes(userId, _context);
                 return Json(new { success = true, message = lstViajes });
             }
             catch (Exception exc)
@@ -80,6 +99,28 @@ namespace Convidarte.Controllers
             }
         }
 
+        // POST: api/Viajes/actualizarEstado
+        [HttpPost("actualizarEstado")]
+        public async Task<IActionResult> ActualizarEstadoViaje([FromBody] Viaje Viaje)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = ErrorModelValidation.ShowError(new SerializableError(ModelState).Values) });
+            }
+
+            try
+            {
+                await LViaje.ActualizarEstadoViaje(Viaje.Id, _context);
+                return Json(new { success = true, message = "Registro guardado correctamente" });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
         // PUT: api/Viajes/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutViaje([FromRoute] int id, [FromBody] Viaje Viaje)
@@ -92,16 +133,10 @@ namespace Convidarte.Controllers
 
             try
             {
-
                 if (Viaje.Id != id)
                 {
                     return Json(new { success = false, message = "No se pude editar el id del Registro" });
                 }
-
-                //if (!Viaje.Activo)
-                //{
-                //    return Json(new { success = false, message = "No se pude editar un registro como inactivo" });
-                //}
 
                 await LViaje.EditarViaje(Viaje, _context);
                 return Json(new { success = true, message = "Registro editado correctamente" });
@@ -112,22 +147,6 @@ namespace Convidarte.Controllers
                 return Json(new { success = false, message = "Error!. " + ErrorMsg });
             }
         }
-
-        //// DELETE: api/Viajes/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteViaje([FromRoute] int id)
-        //{
-        //    try
-        //    {
-        //        LViaje.EliminarViaje(id, _context);
-        //        return Json(new { success = true, message = "Registro eliminado correctamente" });
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
-        //        return Json(new { success = false, message = "Error!. " + ErrorMsg });
-        //    }
-        //}
 
     }
 }

@@ -4,14 +4,16 @@ using Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entidades.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201125032341_EdicionViajes2")]
+    partial class EdicionViajes2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,7 +214,7 @@ namespace Entidades.Migrations
 
                     b.Property<int>("IdCliente");
 
-                    b.Property<string>("IdConductor")
+                    b.Property<string>("IdCoductor")
                         .IsRequired()
                         .HasMaxLength(450);
 
@@ -243,7 +245,7 @@ namespace Entidades.Migrations
 
                     b.HasIndex("IdCliente");
 
-                    b.HasIndex("IdConductor");
+                    b.HasIndex("IdCoductor");
 
                     b.HasIndex("IdDestino");
 
@@ -386,7 +388,7 @@ namespace Entidades.Migrations
 
                     b.HasOne("Entidades.ApplicationUser", "Conductor")
                         .WithMany()
-                        .HasForeignKey("IdConductor")
+                        .HasForeignKey("IdCoductor")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Entidades.Sede", "SedeDestino")

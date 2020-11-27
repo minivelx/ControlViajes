@@ -4,14 +4,16 @@ using Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Entidades.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201125023903_EdicionViajes")]
+    partial class EdicionViajes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,13 +208,14 @@ namespace Entidades.Migrations
                     b.Property<DateTime?>("FinRuta");
 
                     b.Property<string>("IdAuxiliar")
+                        .IsRequired()
                         .HasMaxLength(450);
 
                     b.Property<int>("IdCamion");
 
                     b.Property<int>("IdCliente");
 
-                    b.Property<string>("IdConductor")
+                    b.Property<string>("IdCoductor")
                         .IsRequired()
                         .HasMaxLength(450);
 
@@ -243,7 +246,7 @@ namespace Entidades.Migrations
 
                     b.HasIndex("IdCliente");
 
-                    b.HasIndex("IdConductor");
+                    b.HasIndex("IdCoductor");
 
                     b.HasIndex("IdDestino");
 
@@ -372,7 +375,8 @@ namespace Entidades.Migrations
                 {
                     b.HasOne("Entidades.ApplicationUser", "Auxiliar")
                         .WithMany()
-                        .HasForeignKey("IdAuxiliar");
+                        .HasForeignKey("IdAuxiliar")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Entidades.Camion", "Camion")
                         .WithMany()
@@ -386,7 +390,7 @@ namespace Entidades.Migrations
 
                     b.HasOne("Entidades.ApplicationUser", "Conductor")
                         .WithMany()
-                        .HasForeignKey("IdConductor")
+                        .HasForeignKey("IdCoductor")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Entidades.Sede", "SedeDestino")

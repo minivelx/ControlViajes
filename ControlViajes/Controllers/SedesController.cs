@@ -53,6 +53,23 @@ namespace Convidarte.Controllers
             }
         }
 
+        // GET: api/Sedes/PorCliente/5
+        [Route("PorCliente/{idCliente}")]
+        [HttpGet]
+        public async Task<IActionResult> GetSedesPorCliente([FromRoute] int idCliente)
+        {
+            try
+            {
+                List<Sede> lstSedes = await LSede.ConsultarSedesPorCliente(idCliente, _context);
+                return Json(new { success = true, message = lstSedes });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
         // GET: api/Sedes/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSedeById([FromRoute] int id)

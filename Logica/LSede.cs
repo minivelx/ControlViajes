@@ -18,6 +18,12 @@ namespace Logica
             return await _context.Sedes.Where(x => x.Activo).ToListAsync();
         }
 
+        public static async Task<List<Sede>> ConsultarSedesPorCliente(int idCliente, ApplicationDbContext _context)
+        {
+            return await _context.Sedes.Where(x => x.Activo && x.IdCliente == idCliente).ToListAsync();
+        }
+        
+
         public static async Task<Sede> ConsultarSedePorId(int id, ApplicationDbContext _context)
         {
             return await _context.Sedes.Where(x => x.Id == id).FirstOrDefaultAsync();

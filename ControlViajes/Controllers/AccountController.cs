@@ -281,6 +281,7 @@ namespace ControlViajes.Controllers
 
         [Route("ListarPorRol/{NombreRol}")]
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ListarPorRol([FromRoute] string NombreRol)
         {
             if (!ModelState.IsValid)
@@ -298,7 +299,7 @@ namespace ControlViajes.Controllers
                     var Roles = _userManager.GetRolesAsync(Usuario).Result.ToList();
                     foreach (var Rol in Roles)
                     {
-                        if (Rol == NombreRol)
+                        if (Rol.ToLower() == NombreRol.ToLower())
                         {
                             lstResult.Add(new Usuario { Nombre = Usuario.Nombre, Id = Usuario.Id, Email = Usuario.Email, Activo = Usuario.Activo });
                         }

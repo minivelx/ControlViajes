@@ -17,7 +17,10 @@ namespace Entidades
         public int IdCamion { get; set; }        
 
         [Required, StringLength(450), ForeignKey("Conductor")]
-        public String IdCoductor { get; set; }
+        public String IdConductor { get; set; }
+
+        [StringLength(450), ForeignKey("Auxiliar")]
+        public String IdAuxiliar { get; set; }
 
         [Required, ForeignKey("Cliente")]
         public int IdCliente { get; set; }
@@ -55,6 +58,8 @@ namespace Entidades
 
         public String NombreConductor { get { return Conductor?.Nombre; } }
 
+        public String NombreAuxiliar { get { return Auxiliar?.Nombre; } }
+
         public String NombreCliente { get { return Cliente?.Nombre; } }
 
         public String NombreOrigen { get { return SedeOrigen?.Nombre; } }
@@ -65,19 +70,34 @@ namespace Entidades
 
         public string NombreUsuarioRegistro { get { return Usuario?.Nombre; } }
 
+        public string Estado
+        {
+            get
+            {
+                if (FinRuta != null)
+                    return "Finalizado";
+                else if (InicioRuta != null)
+                    return "En proceso";
+                else
+                    return "Sin Iniciar";                        
+            }
+        }
+
         [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
 
 
-        [JsonIgnore]
+   
         public Camion Camion { get; set; }
-        [JsonIgnore]
+       
         public ApplicationUser Conductor { get; set; }
-        [JsonIgnore]
+        
+        public ApplicationUser Auxiliar { get; set; }
+        
         public Cliente Cliente { get; set; }
-        [JsonIgnore]
+        
         public Sede SedeOrigen { get; set; }
-        [JsonIgnore]
+        
         public Sede SedeDestino { get; set; }
         [JsonIgnore]
         public ApplicationUser Usuario { get; set; }
