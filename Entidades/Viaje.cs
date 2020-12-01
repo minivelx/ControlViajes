@@ -17,10 +17,10 @@ namespace Entidades
         public int IdCamion { get; set; }        
 
         [Required, StringLength(450), ForeignKey("Conductor")]
-        public String IdConductor { get; set; }
+        public string IdConductor { get; set; }
 
         [StringLength(450), ForeignKey("Auxiliar")]
-        public String IdAuxiliar { get; set; }
+        public string IdAuxiliar { get; set; }
 
         [Required, ForeignKey("Cliente")]
         public int IdCliente { get; set; }
@@ -31,13 +31,13 @@ namespace Entidades
         [Required, ForeignKey("SedeDestino")]
         public int IdDestino { get; set; }
 
-        [Required, StringLength(20)]
-        public String NumeroManifiesto { get; set; }
+        [StringLength(20)]
+        public string NumeroManifiesto { get; set; }
 
-        [Required, StringLength(20)]
-        public String NumeroCuenta { get; set; }
+        [StringLength(20)]
+        public string NumeroCuenta { get; set; }
 
-        public decimal ValorAnticipo { get; set; }
+        public decimal ? ValorAnticipo { get; set; }
 
         public DateTime ? InicioRuta { get; set; }
 
@@ -54,17 +54,17 @@ namespace Entidades
             } 
         }
 
-        public String Placa { get { return Camion?.Placa; } }
+        public string Placa { get { return Camion?.Placa; } }
 
-        public String NombreConductor { get { return Conductor?.Nombre; } }
+        public string NombreConductor { get { return Conductor?.Nombre; } }
 
-        public String NombreAuxiliar { get { return Auxiliar?.Nombre; } }
+        public string NombreAuxiliar { get { return Auxiliar?.Nombre; } }
 
-        public String NombreCliente { get { return Cliente?.Nombre; } }
+        public string NombreCliente { get { return Cliente?.Nombre; } }
 
-        public String NombreOrigen { get { return SedeOrigen?.Nombre; } }
+        public string NombreOrigen { get { return SedeOrigen?.Nombre; } }
 
-        public String NombreDestino { get { return SedeDestino?.Nombre; } }
+        public string NombreDestino { get { return SedeDestino?.Nombre; } }
 
         public DateTime FechaRegistro { get; set; }
 

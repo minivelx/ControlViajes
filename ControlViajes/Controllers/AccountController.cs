@@ -388,10 +388,14 @@ namespace ControlViajes.Controllers
                 return Ok(new
                 {
                     success = true,
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = expiration,
-                    nombre = Usuario.Nombre,
-                    id = Usuario.Id
+                    message = new  {
+
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = expiration,
+                        nombre = Usuario.Nombre,
+                        id = Usuario.Id
+                    }
+                    
                 });
             }
             catch (Exception exc)
