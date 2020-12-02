@@ -18,7 +18,7 @@ namespace Convidarte.Controllers
     public class ViajesController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        
         public ViajesController(ApplicationDbContext context, IHubContext<ContadorHub> hubContext)
         {
             _context = context;
@@ -37,6 +37,7 @@ namespace Convidarte.Controllers
         }
 
         // GET: api/Viajes
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetViajes()
         {

@@ -87,11 +87,11 @@ namespace Entidades
         {
             get
             {
-                if (FinRuta != null)
+                if (InicioRuta == null && FinRuta == null)
                     return 1;
-                else if (InicioRuta != null)
+                else if (InicioRuta != null && FinRuta == null)
                     return 2;
-                else
+                else 
                     return 3;
             }
         }
