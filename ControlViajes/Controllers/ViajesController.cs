@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ControlViajes;
 using Entidades;
+using Entidades.ViewModel;
 using Logica;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Convidarte.Controllers
 {
@@ -17,9 +19,21 @@ namespace Convidarte.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public ViajesController(ApplicationDbContext context)
+        public ViajesController(ApplicationDbContext context, IHubContext<ContadorHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
+        }
+
+        private IHubContext<ContadorHub> _hubContext;
+
+        [AllowAnonymous]
+        [HttpGet("Prueba")]
+        public async Task<IActionResult> Prueba()
+        {
+            var message = await LViaje.getDashboard(_context);
+            await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message } );
+            return Json(new { success = true, message });
         }
 
         // GET: api/Viajes
@@ -90,6 +104,8 @@ namespace Convidarte.Controllers
             try
             {
                 await LViaje.GuardarViaje(Viaje, _context);
+                var message = await LViaje.getDashboard(_context);
+                await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
                 return Json(new { success = true, message = "Registro guardado correctamente" });
             }
             catch (Exception exc)
@@ -99,8 +115,8 @@ namespace Convidarte.Controllers
             }
         }
 
-        // POST: api/Viajes/actualizarEstado
-        [HttpPost("actualizarEstado")]
+        // POST: api/Viajes/ActualizarEstado
+        [HttpPost("ActualizarEstado")]
         public async Task<IActionResult> ActualizarEstadoViaje([FromBody] Viaje Viaje)
         {
 
@@ -112,7 +128,41 @@ namespace Convidarte.Controllers
             try
             {
                 await LViaje.ActualizarEstadoViaje(Viaje.Id, _context);
+                var message = await LViaje.getDashboard(_context);
+                await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
                 return Json(new { success = true, message = "Registro guardado correctamente" });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
+        // POST: api/Viajes/Historico
+        [HttpPost("Historico")]
+        public async Task<IActionResult> HistoricoViajes([FromBody] FiltroViewModel filtro)
+        {
+            try
+            {
+                var lstViajes = await LViaje.ConsultarHistoricoViajes(filtro, _context);
+                return Json(new { success = true, message = lstViajes });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
+        // POST: api/Viajes/OcupacionDiaria
+        [HttpPost("OcupacionDiaria")]
+        public async Task<IActionResult> OcupacionDiaria([FromBody] FiltroViewModel filtro)
+        {
+            try
+            {
+                var lstViajes = await LViaje.ConsultarOcupacionDiaria(filtro, _context);
+                return Json(new { success = true, message = lstViajes });
             }
             catch (Exception exc)
             {
@@ -139,6 +189,8 @@ namespace Convidarte.Controllers
                 }
 
                 await LViaje.EditarViaje(Viaje, _context);
+                var message = await LViaje.getDashboard(_context);
+                await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
                 return Json(new { success = true, message = "Registro editado correctamente" });
             }
             catch (Exception exc)

@@ -83,6 +83,19 @@ namespace Entidades
             }
         }
 
+        public int NumeroEstado
+        {
+            get
+            {
+                if (FinRuta != null)
+                    return 1;
+                else if (InicioRuta != null)
+                    return 2;
+                else
+                    return 3;
+            }
+        }
+
         [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
 
