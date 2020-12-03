@@ -111,7 +111,9 @@ namespace Logica
         {
             var dashboard = new DashboardViewModel();
 
-            var lstViajes =  await ConsultarViajes(_context);
+            //**************************** ESTA CONSULTA SE DEBE OPTIMIZAR PARA NO CARGAR TODOS LOS OBJETOS DEL VIAJE *********************************************************************
+            var dateNow = DateTime.Now;
+            var lstViajes =  (await ConsultarViajes(_context)).Where(x=> x.Fecha.Month == dateNow.Month && x.Fecha.Year == dateNow.Year).ToList();
 
             foreach(var item in lstViajes)
             {
@@ -135,6 +137,10 @@ namespace Logica
             int totalUsados = dashboard.lstVehiculosPropios.GroupBy(x => x.Placa).Count();
             dashboard.lstDatosTorta.Add(totalUsados);
             dashboard.lstDatosTorta.Add(totalPropios -totalUsados);
+
+
+            dashboard.SumaAnticiposDia = (decimal) lstViajes.Where(x => x.Fecha.Day == dateNow.Day).ToList().Sum(x => x.ValorAnticipo);
+            dashboard.AcumuladoMes = (decimal) lstViajes.Sum(x => x.ValorAnticipo);
 
             return dashboard;
         }

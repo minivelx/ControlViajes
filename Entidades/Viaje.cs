@@ -74,9 +74,9 @@ namespace Entidades
         {
             get
             {
-                if (FinRuta != null)
+                if (InicioRuta == null && FinRuta == null)
                     return "Finalizado";
-                else if (InicioRuta != null)
+                else if (InicioRuta != null && FinRuta == null)
                     return "En proceso";
                 else
                     return "Sin Iniciar";                        

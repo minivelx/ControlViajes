@@ -270,6 +270,10 @@ namespace ControlViajes.Controllers
                     return Json(new { success = false, message = "Usuario o contraseña invalido." });
                 }
 
+                //token de dispositivo firebase
+                usuario.TokenFirebase = model.TokenFirebase;
+                await _context.SaveChangesAsync();
+
                 return BuildToken(usuario);
             }
             catch (Exception exc)

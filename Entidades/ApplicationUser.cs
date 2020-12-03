@@ -15,6 +15,9 @@ namespace Entidades
 
         public bool Activo { get; set; }
 
+        [StringLength(200)]
+        public string TokenFirebase { get; set; }
+
         [ForeignKey("Cliente")]
         public int ? IdCliente { get; set; }
 
