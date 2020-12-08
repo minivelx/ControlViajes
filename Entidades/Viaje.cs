@@ -1,12 +1,18 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entidades
 {
-    public class Viaje
+    public class Viaje : IValidatableObject
     {
+        private static int ESTADO_TALLER = 0;
+        private static int ESTADO_ASIGNADO = 1;
+        private static int ESTADO_INICIADO = 2;
+        private static int ESTADO_FINALIZADO = 3;       
+
         [Key]
         public int Id { get; set; }
 
@@ -88,19 +94,30 @@ namespace Entidades
             get
             {
                 if (InicioRuta == null && FinRuta == null)
-                    return 1;
+                    return ESTADO_ASIGNADO;
                 else if (InicioRuta != null && FinRuta == null)
-                    return 2;
+                    return ESTADO_INICIADO;
                 else 
-                    return 3;
+                    return ESTADO_FINALIZADO;
             }
         }
 
         [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (IdDestino == IdOrigen)
+            {
+                yield return new ValidationResult(errorMessage: "El origen y destino no pueden ser iguales", memberNames: new[] { "Destino" });
+            }
 
-   
+            if (Fecha < DateTime.Now && InicioRuta == null)
+            {
+                yield return new ValidationResult(errorMessage: "La fecha no puede ser menor a la fecha actual", memberNames: new[] { "Fecha" });
+            }
+        }
+
         public Camion Camion { get; set; }
        
         public ApplicationUser Conductor { get; set; }

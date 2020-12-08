@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Entidades;
+using Entidades.Interfaces;
+using Entidades.ViewModel;
 
 namespace ControlViajes
 {
@@ -83,6 +85,9 @@ namespace ControlViajes
                 Description = "Test Description"               
                 
             }));
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailSenderOptions"));
 
             services.AddCors();
         }

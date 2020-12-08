@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ControlViajes;
 using Entidades;
+using Entidades.Interfaces;
 using Entidades.ViewModel;
 using Logica;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,11 +19,13 @@ namespace Convidarte.Controllers
     public class ViajesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        
-        public ViajesController(ApplicationDbContext context, IHubContext<ContadorHub> hubContext)
+        private readonly IEmailSender _emailSender;
+
+        public ViajesController(ApplicationDbContext context, IHubContext<ContadorHub> hubContext, IEmailSender emailSender)
         {
             _context = context;
             _hubContext = hubContext;
+            _emailSender = emailSender;
         }
 
         private IHubContext<ContadorHub> _hubContext;
@@ -33,17 +36,18 @@ namespace Convidarte.Controllers
         {
             var message = await LViaje.getDashboard(_context);
             await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message } );
+            
+            
             return Json(new { success = true, message });
         }
 
-        // GET: api/Viajes
-        [AllowAnonymous]
+        // GET: api/Viajes        
         [HttpGet]
         public async Task<IActionResult> GetViajes()
         {
             try
             {
-                List<Viaje> lstViajes = await LViaje.ConsultarViajes(_context);
+                List<Viaje> lstViajes = await LViaje.ConsultarViajesDia(_context);
                 return Json(new { success = true, message = lstViajes });
             }
             catch (Exception exc)
@@ -71,6 +75,7 @@ namespace Convidarte.Controllers
         }
 
         // GET: api/Viajes/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetViajeById([FromRoute] int id)
         {
@@ -93,6 +98,7 @@ namespace Convidarte.Controllers
         }
 
         // POST: api/Viajes
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> PostViaje([FromBody] Viaje Viaje)
         {
@@ -107,6 +113,8 @@ namespace Convidarte.Controllers
                 await LViaje.GuardarViaje(Viaje, _context);
                 var message = await LViaje.getDashboard(_context);
                 await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+                LEmail.EnviarEmailAsignacionViaje(Viaje, _emailSender);
+
                 return Json(new { success = true, message = "Registro guardado correctamente" });
             }
             catch (Exception exc)
@@ -192,6 +200,8 @@ namespace Convidarte.Controllers
                 await LViaje.EditarViaje(Viaje, _context);
                 var message = await LViaje.getDashboard(_context);
                 await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+                LEmail.EditarEmailAsignacionViaje(Viaje, _emailSender);
+
                 return Json(new { success = true, message = "Registro editado correctamente" });
             }
             catch (Exception exc)

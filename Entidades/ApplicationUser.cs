@@ -24,6 +24,9 @@ namespace Entidades
         public string NombreCliente { get { return Cliente?.Nombre; } }
 
         [JsonIgnore]
+        public string InfoContacto { get { return Nombre + " - " + PhoneNumber; } }
+
+        [JsonIgnore]
         public Cliente Cliente { get; set; }
     }
 

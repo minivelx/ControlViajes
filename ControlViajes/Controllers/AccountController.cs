@@ -397,7 +397,8 @@ namespace ControlViajes.Controllers
                         token = new JwtSecurityTokenHandler().WriteToken(token),
                         expiration = expiration,
                         nombre = Usuario.Nombre,
-                        id = Usuario.Id
+                        id = Usuario.Id,
+                        roles = roles
                     }
                     
                 });

@@ -23,10 +23,20 @@ namespace Logica
                 .ToListAsync();
         }
 
-        //public static List<Viaje> ConsultarViajesActivos(ApplicationDbContext _context)
-        //{
-        //    return _context.Viajes.Where(x => x.Activo).ToList();
-        //}
+        public static async Task<List<Viaje>> ConsultarViajesDia(ApplicationDbContext _context)
+        {
+            var dateNow = DateTime.Now.Date;
+            return await _context.Viajes
+                .Include(x => x.Auxiliar)
+                .Include(x => x.Conductor)
+                .Include(x => x.Camion)
+                .Include(x => x.SedeOrigen)
+                .Include(x => x.SedeDestino)
+                .Include(x => x.Cliente)
+                .Include(x => x.Usuario)
+                .Where(x=> x.Fecha.Date == dateNow || x.FechaRegistro == dateNow)
+                .OrderByDescending(x=> x.Id).ToListAsync();
+        }
 
         public static async Task<Viaje> ConsultarViajePorId(int id, ApplicationDbContext _context)
         {
@@ -90,11 +100,9 @@ namespace Logica
             return lstOcupacion;
         }
 
-
-        
-
         public static async Task<List<Viaje>> ConsultarMisViajes(string idUsuario, ApplicationDbContext _context)
         {
+            var dateNow = DateTime.Now.Date;
             return await _context.Viajes
                 .Include(x => x.Auxiliar)
                 .Include(x => x.Conductor)
@@ -103,19 +111,20 @@ namespace Logica
                 .Include(x => x.SedeDestino)
                 .Include(x => x.Cliente)
                 .Include(x => x.Usuario)
-                .Where(x => x.IdAuxiliar == idUsuario || x.IdConductor == idUsuario).ToListAsync();
+                .Where(x => (x.IdAuxiliar == idUsuario || x.IdConductor == idUsuario) &&
+                            (x.Fecha.Date == dateNow) ).ToListAsync();
         }
-
 
         public static async Task<DashboardViewModel> getDashboard(ApplicationDbContext _context)
         {
             var dashboard = new DashboardViewModel();
 
             //**************************** ESTA CONSULTA SE DEBE OPTIMIZAR PARA NO CARGAR TODOS LOS OBJETOS DEL VIAJE *********************************************************************
-            var dateNow = DateTime.Now;
-            var lstViajes =  (await ConsultarViajes(_context)).Where(x=> x.Fecha.Month == dateNow.Month && x.Fecha.Year == dateNow.Year).ToList();
+            var dateNow = DateTime.Now.Date;
+            var lstViajes = await _context.Viajes.Where(x=> x.Fecha.Date == dateNow).Include(x=> x.Camion).Include(x=> x.Cliente).ToListAsync();
+            var acumuladoMes = _context.Viajes.Where(x => x.Fecha.Month == dateNow.Month && x.Fecha.Year == dateNow.Year).Sum(x=> x.ValorAnticipo);
 
-            foreach(var item in lstViajes)
+            foreach (var item in lstViajes)
             {
                 if (item.Camion.EsPropio)                
                     dashboard.lstVehiculosPropios.Add(new VehiculoViewModel { Placa = item.Placa, Cliente = item.NombreCliente, NumeroEstado = item.NumeroEstado});
@@ -139,8 +148,8 @@ namespace Logica
             dashboard.lstDatosTorta.Add(totalPropios -totalUsados);
 
 
-            dashboard.SumaAnticiposDia = (decimal) lstViajes.Where(x => x.Fecha.Day == dateNow.Day).ToList().Sum(x => x.ValorAnticipo);
-            dashboard.AcumuladoMes = (decimal) lstViajes.Sum(x => x.ValorAnticipo);
+            dashboard.SumaAnticiposDia = (decimal) lstViajes.Sum(x => x.ValorAnticipo);
+            dashboard.AcumuladoMes = (decimal) acumuladoMes;
 
             return dashboard;
         }
@@ -148,7 +157,6 @@ namespace Logica
 
         public static async Task GuardarViaje(Viaje Viaje, ApplicationDbContext _context)
         {
-            //Viaje.Activo = true;
             _context.Viajes.Add(Viaje);
             await _context.SaveChangesAsync();
         }
@@ -171,12 +179,5 @@ namespace Logica
             _context.Entry(Viaje).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
-
-        //public static void EliminarViaje(int id, ApplicationDbContext _context)
-        //{
-        //    Viaje Viaje = ConsultarViajePorId(id, _context);
-        //    Viaje.Activo = false;
-        //    EditarViaje(Viaje, _context);
-        //}
     }
 }
