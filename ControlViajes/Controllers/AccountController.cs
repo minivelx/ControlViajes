@@ -90,7 +90,9 @@ namespace ControlViajes.Controllers
                 var Usuario = _userManager.FindByIdAsync(id).Result;
                 var totalRoles = _rolManager.Roles.ToList();
                 var Roles = _userManager.GetRolesAsync(Usuario).Result.ToList();
-                var user = new Usuario { Id = Usuario.Id, Email = Usuario.Email, Nombre = Usuario.Nombre, Activo = Usuario.Activo };
+                var user = new Usuario { Id = Usuario.Id, Email = Usuario.Email, Nombre = Usuario.Nombre, Cedula = Usuario.Cedula, Celular = Usuario.PhoneNumber, Activo = Usuario.Activo };
+                var clienteUsuario = Usuario.IdCliente == null ? null : _context.Clientes.Where(x=> x.Id == Usuario.IdCliente).FirstOrDefault();
+                user.NombreCliente = clienteUsuario?.Nombre;
                 totalRoles.ForEach(x => user.Roles.Add(new RolViewModel { Nombre = x.Name, Seleccionado = Roles.Any(y => y == x.Name) ? true : false }));
 
                 return Json(new { success = true, message = user });
@@ -338,10 +340,25 @@ namespace ControlViajes.Controllers
                 {
                     var Usuario = _context.Users.Where(x => x.Id == id).FirstOrDefault();
                     Usuario.Nombre = model.Nombre;
+                    Usuario.Email = model.Email;
+                    Usuario.Cedula = model.Cedula;
+                    Usuario.IdCliente = model.IdCliente;
+                    Usuario.PhoneNumber = model.Celular;
                     Usuario.Activo = model.Activo;
                     _context.SaveChanges();
 
                     await AsignarRolAsync(_context, Usuario, model.Roles);
+
+                    if(model.Password != null)
+                    {
+                        var Token = await _userManager.GeneratePasswordResetTokenAsync(result);
+                        var reseteo = await _userManager.ResetPasswordAsync(result, Token, model.Password);
+
+                        if (!reseteo.Succeeded)
+                        {
+                            return Json(new { success = false, message = "Usuario actualizado, sin embargo no se pudo cambiar la contraseña." });
+                        }
+                    } 
 
                     return Json(new { success = true, message = "Registro editado correctamente." });
                 }

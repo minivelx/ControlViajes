@@ -25,6 +25,8 @@ namespace Entidades
 
         public string NombreCliente { get; set; }
 
+        public string Password { get; set; }
+
         public List<RolViewModel> Roles { get; set; }
 
     }
