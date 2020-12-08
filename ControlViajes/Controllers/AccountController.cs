@@ -349,7 +349,7 @@ namespace ControlViajes.Controllers
 
                     await AsignarRolAsync(_context, Usuario, model.Roles);
 
-                    if(model.Password != null)
+                    if(!string.IsNullOrEmpty(model.Password))
                     {
                         var Token = await _userManager.GeneratePasswordResetTokenAsync(result);
                         var reseteo = await _userManager.ResetPasswordAsync(result, Token, model.Password);

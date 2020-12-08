@@ -113,6 +113,7 @@ namespace Convidarte.Controllers
                 await LViaje.GuardarViaje(Viaje, _context);
                 var message = await LViaje.getDashboard(_context);
                 await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+                Viaje = await LViaje.ConsultarViajePorId(Viaje.Id, _context);
                 LEmail.EnviarEmailAsignacionViaje(Viaje, _emailSender);
 
                 return Json(new { success = true, message = "Registro guardado correctamente" });
