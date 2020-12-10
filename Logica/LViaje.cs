@@ -34,8 +34,23 @@ namespace Logica
                 .Include(x => x.SedeDestino)
                 .Include(x => x.Cliente)
                 .Include(x => x.Usuario)
-                .Where(x=> x.Fecha.Date == dateNow || x.FechaRegistro == dateNow)
+                .Where(x=> x.Fecha.Date >= dateNow || x.FechaRegistro == dateNow)
                 .OrderByDescending(x=> x.Id).ToListAsync();
+        }
+
+        public static async Task<List<Viaje>> ConsultarViajesDiaCliente(int idCliente, ApplicationDbContext _context)
+        {
+            var dateNow = DateTime.Now.Date;
+            return await _context.Viajes
+                .Include(x => x.Auxiliar)
+                .Include(x => x.Conductor)
+                .Include(x => x.Camion)
+                .Include(x => x.SedeOrigen)
+                .Include(x => x.SedeDestino)
+                .Include(x => x.Cliente)
+                .Include(x => x.Usuario)
+                .Where(x => (x.Fecha.Date >= dateNow || x.FechaRegistro == dateNow) && x.IdCliente == idCliente)
+                .OrderByDescending(x => x.Id).ToListAsync();
         }
 
         public static async Task<Viaje> ConsultarViajePorId(int id, ApplicationDbContext _context)
@@ -118,8 +133,6 @@ namespace Logica
         public static async Task<DashboardViewModel> getDashboard(ApplicationDbContext _context)
         {
             var dashboard = new DashboardViewModel();
-
-            //**************************** ESTA CONSULTA SE DEBE OPTIMIZAR PARA NO CARGAR TODOS LOS OBJETOS DEL VIAJE *********************************************************************
             var dateNow = DateTime.Now.Date;
             var lstViajes = await _context.Viajes.Where(x=> x.Fecha.Date == dateNow).Include(x=> x.Camion).Include(x=> x.Cliente).ToListAsync();
             var acumuladoMes = _context.Viajes.Where(x => x.Fecha.Month == dateNow.Month && x.Fecha.Year == dateNow.Year).Sum(x=> x.ValorAnticipo);
@@ -130,9 +143,8 @@ namespace Logica
                     dashboard.lstVehiculosPropios.Add(new VehiculoViewModel { Placa = item.Placa, Cliente = item.NombreCliente, NumeroEstado = item.NumeroEstado});
                 else
                     dashboard.lstVehiculosTerceros.Add(new VehiculoViewModel { Placa = item.Placa, Cliente = item.NombreCliente, NumeroEstado = item.NumeroEstado });
-
-                
             }
+
             var lstGroupViajes = lstViajes.GroupBy(x => new { x.IdCliente, x.NombreCliente } ).ToList();
 
             foreach(var agrupacion in lstGroupViajes)

@@ -81,11 +81,11 @@ namespace Entidades
             get
             {
                 if (InicioRuta == null && FinRuta == null)
-                    return "Finalizado";
+                    return "Sin Iniciar";
                 else if (InicioRuta != null && FinRuta == null)
                     return "En proceso";
                 else
-                    return "Sin Iniciar";                        
+                    return "Finalizado";                        
             }
         }
 

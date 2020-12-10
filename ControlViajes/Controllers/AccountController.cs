@@ -104,7 +104,6 @@ namespace ControlViajes.Controllers
             }
         }
 
-        [AllowAnonymous]
         [Route("Create")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] Register model)

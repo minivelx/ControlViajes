@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using ControlViajes;
 using Entidades;
 using Logica;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convidarte.Controllers
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrador")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class CamionesController : Controller
@@ -87,6 +89,8 @@ namespace Convidarte.Controllers
 
             try
             {
+                Camion.FechaRegistro = DateTime.Now;
+                Camion.UsuarioRegistro = User?.getUserId();
                 await LCamion.GuardarCamion(Camion, _context);
                 return Json(new { success = true, message = "Camión guardado correctamente" });
             }
@@ -101,7 +105,6 @@ namespace Convidarte.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCamion([FromRoute] int id, [FromBody] Camion Camion)
         {
-
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = ErrorModelValidation.ShowError(new SerializableError(ModelState).Values) });
@@ -139,7 +142,6 @@ namespace Convidarte.Controllers
                 string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
                 return Json(new { success = false, message = "Error!. " + ErrorMsg });
             }
-        }
- 
+        } 
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Entidades
 {
-    public class Register
+    public class Register : IValidatableObject
     {
         public Register()
         {
@@ -27,5 +28,13 @@ namespace Entidades
         public int ? IdCliente { get; set; }
 
         public List<RolViewModel> Roles { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Roles.Any(x=> x.Nombre.ToLower() == "cliente" && x.Seleccionado) && IdCliente == null)
+            {
+                yield return new ValidationResult(errorMessage: "El rol 'Cliente' requiere que el usuario se asigne a un Cliente", memberNames: new[] { "IdCliente" });
+            }
+        }
     }
 }

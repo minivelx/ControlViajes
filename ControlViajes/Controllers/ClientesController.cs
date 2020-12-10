@@ -5,11 +5,13 @@ using System.Transactions;
 using ControlViajes;
 using Entidades;
 using Logica;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convidarte.Controllers
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrador")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class ClientesController : Controller
@@ -98,6 +100,7 @@ namespace Convidarte.Controllers
 
             try
             {
+                Cliente.UsuarioRegistro = User?.getUserId();
                 await LCliente.GuardarCliente(Cliente, _context);
                 return Json(new { success = true, message = "Cliente guardado correctamente" });
             }

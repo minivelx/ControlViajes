@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,6 +21,8 @@ namespace Entidades
         public bool Activo { get; set; }
 
         public string NombreUsuarioRegistro { get { return Usuario?.Nombre; } }
+
+        public DateTime ? FechaRegistro { get; set; }
 
         [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }
