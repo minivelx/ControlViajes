@@ -20,9 +20,16 @@ namespace Entidades
 
         public bool Activo { get; set; }
 
+        public bool EstadoTaller { get; set; }
+
+        public DateTime? InicioTaller { get; set; }
+
+        public DateTime? FinTaller { get; set; }
+
         public string NombreUsuarioRegistro { get { return Usuario?.Nombre; } }
 
         public DateTime ? FechaRegistro { get; set; }
+
 
         [JsonIgnore, StringLength(450), ForeignKey("Usuario")]
         public string UsuarioRegistro { get; set; }

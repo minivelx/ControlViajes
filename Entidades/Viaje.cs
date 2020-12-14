@@ -80,10 +80,12 @@ namespace Entidades
         {
             get
             {
-                if (InicioRuta == null && FinRuta == null)
+                if (Camion!= null && Camion.EstadoTaller && FinRuta == null)
+                    return "Taller";
+                else if (InicioRuta == null && FinRuta == null)
                     return "Sin Iniciar";
                 else if (InicioRuta != null && FinRuta == null)
-                    return "En proceso";
+                    return "En Ruta";
                 else
                     return "Finalizado";                        
             }
@@ -93,7 +95,9 @@ namespace Entidades
         {
             get
             {
-                if (InicioRuta == null && FinRuta == null)
+                if (Camion != null && Camion.EstadoTaller && FinRuta == null)
+                    return ESTADO_TALLER;
+                else if (InicioRuta == null && FinRuta == null)
                     return ESTADO_ASIGNADO;
                 else if (InicioRuta != null && FinRuta == null)
                     return ESTADO_INICIADO;
@@ -112,10 +116,10 @@ namespace Entidades
                 yield return new ValidationResult(errorMessage: "El origen y destino no pueden ser iguales", memberNames: new[] { "Destino" });
             }
 
-            if (Fecha < DateTime.Now && InicioRuta == null)
-            {
-                yield return new ValidationResult(errorMessage: "La fecha no puede ser menor a la fecha actual", memberNames: new[] { "Fecha" });
-            }
+            //if (Fecha < DateTime.Now && InicioRuta == null)
+            //{
+            //    yield return new ValidationResult(errorMessage: "La fecha no puede ser menor a la fecha actual", memberNames: new[] { "Fecha" });
+            //}
         }
 
         public Camion Camion { get; set; }

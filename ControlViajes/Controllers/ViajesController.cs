@@ -23,6 +23,7 @@ namespace Convidarte.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
+        private IHubContext<ContadorHub> _hubContext;
 
         public ViajesController(ApplicationDbContext context, IHubContext<ContadorHub> hubContext, IEmailSender emailSender, IConfiguration configuration)
         {
@@ -30,19 +31,17 @@ namespace Convidarte.Controllers
             _hubContext = hubContext;
             _emailSender = emailSender;
             _configuration = configuration;
-        }
-
-        private IHubContext<ContadorHub> _hubContext;
+        }        
 
         [AllowAnonymous]
         [HttpGet("Prueba")]
         public async Task<IActionResult> Prueba()
         {
             var message = await LViaje.getDashboard(_context);
-            await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message } );
-            
-            
-            return Json(new { success = true, message });
+            await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+
+            //LNotificacionFirebase.consumirNotificacionPushViaje("b7a3edb2-ca49-490b-bac0-05e2d11cfa72", _configuration, _context);
+            return Json(new { success = true, message = message });
         }
 
         // GET: api/Viajes        

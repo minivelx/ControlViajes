@@ -28,8 +28,11 @@ namespace Entidades.ViewModel
         public string Cliente { get; set; }
         public string Estado {
             get 
-            { 
-                if(NumeroEstado == 1)                
+            {
+                if (NumeroEstado == 0)
+                    return "Taller";
+
+                else if (NumeroEstado == 1)                
                     return "Inicio";
 
                 else if(NumeroEstado == 2)                

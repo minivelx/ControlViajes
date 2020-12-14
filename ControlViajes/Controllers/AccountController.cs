@@ -12,6 +12,7 @@ using System.Text;
 using Entidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace ControlViajes.Controllers
 {
@@ -41,7 +42,6 @@ namespace ControlViajes.Controllers
 
         [Route("Users")]
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult GetUsers()
         {
             if (!ModelState.IsValid)
@@ -51,9 +51,8 @@ namespace ControlViajes.Controllers
 
             try
             {
-                var Usuarios = _userManager.Users.ToList();
-                var Clientes = _context.Clientes.ToList();
-                Usuarios.ForEach(x => x.Cliente = x.IdCliente == null ? null : Clientes.Find(c => c.Id == x.IdCliente));
+                var Usuarios = _userManager.Users.Include(x => x.Cliente).ToList();
+
                 List<Usuario> Users = Usuarios.Select(x => new Usuario
                 {
                     Id = x.Id,
@@ -63,8 +62,7 @@ namespace ControlViajes.Controllers
                     Celular = x.PhoneNumber,
                     Activo = x.Activo,
                     IdCliente = x.IdCliente,
-                    NombreCliente = x.NombreCliente,
-                    Roles = ObtenerRoles(x)
+                    NombreCliente = x.NombreCliente
                 }).ToList();
 
                 return Json(new { success = true, message = Users });
@@ -296,7 +294,7 @@ namespace ControlViajes.Controllers
 
             try
             {
-                var Usuarios = _userManager.Users.ToList();
+                var Usuarios = _userManager.Users.Where(x=> x.Activo).ToList();
                 var lstResult = new List<Usuario>();
 
                 foreach (var Usuario in Usuarios)

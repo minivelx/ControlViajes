@@ -156,9 +156,11 @@ namespace Logica
 
             int totalPropios = _context.Camiones.Where(x => x.Activo == true && x.EsPropio).Count();
             int totalUsados = dashboard.lstVehiculosPropios.GroupBy(x => x.Placa).Count();
-            dashboard.lstDatosTorta.Add(totalUsados);
-            dashboard.lstDatosTorta.Add(totalPropios -totalUsados);
+            int totalTaller = _context.Viajes.Where(x => x.Fecha.Date == dateNow && x.NumeroEstado == 0).Include(x => x.Camion).Count();
 
+            dashboard.lstDatosTorta.Add(totalUsados - totalTaller);
+            dashboard.lstDatosTorta.Add(totalPropios - totalUsados );
+            dashboard.lstDatosTorta.Add(totalTaller);
 
             dashboard.SumaAnticiposDia = (decimal) lstViajes.Sum(x => x.ValorAnticipo);
             dashboard.AcumuladoMes = (decimal) acumuladoMes;

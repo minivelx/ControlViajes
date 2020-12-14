@@ -28,17 +28,23 @@ namespace Entidades
         public DbSet<Sede> Sedes { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Viaje> Viajes { get; set; }
+        public DbSet<HistoricoTaller> HistoricoTaller { get; set; }
+
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             //modelBuilder.Entity<SedeXCliente>().HasKey(k => new { k.IdSede, k.IdCliente });
+            modelBuilder.Entity<Camion>().HasIndex(b => b.Placa).IsUnique();
 
             //Custom Identity Tables
             modelBuilder.Entity<ApplicationUser>().ToTable("Usuarios");
             modelBuilder.Entity<ApplicationRole>().ToTable("Roles");
             modelBuilder.Entity<ApplicationUserRole>().ToTable("RolUsuarios");
+
+            
         }
     }
 }

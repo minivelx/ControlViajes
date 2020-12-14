@@ -1,17 +1,23 @@
-﻿using Entidades.ViewModel;
+﻿using Entidades;
+using Entidades.ViewModel;
 using Microsoft.Extensions.Configuration;
 
 namespace Logica
 {
     public class LNotificacionFirebase
     {
-        public static void consumirNotificacionPush(IConfiguration _configuration)
+        public static void consumirNotificacionPushViaje(string userId, IConfiguration _configuration, ApplicationDbContext _context)
         {
             var url = _configuration.GetConnectionString("servidorFirebase").ToString();
-            PushNotificationViewModel notificacion = new PushNotificationViewModel();
+            var llaveFirebase = _configuration.GetConnectionString("Llave_firebase").ToString();
+            var user = _context.Users.Find(userId);
 
-            //ResultViewModel resultMessage = LHttpRequest.POSTRequest(body2, url);
+            if (!string.IsNullOrEmpty(user.TokenFirebase))
+            {
+                var notification = new Notification { Title = "Nuevo viaje asignado!", Body = "Ingresa para conocer el detalle del viaje" };
+                var PushNotificacion = new PushNotificationViewModel { To = user.TokenFirebase, Notification = notification };
+                LHttpRequest.POSTRequestFirebase(PushNotificacion, url, llaveFirebase);
+            }
         }
-
     }
 }

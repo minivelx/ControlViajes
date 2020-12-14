@@ -7,6 +7,7 @@ using Logica;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Convidarte.Controllers
 {
@@ -16,10 +17,12 @@ namespace Convidarte.Controllers
     public class CamionesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private IHubContext<ContadorHub> _hubContext;
 
-        public CamionesController(ApplicationDbContext context)
+        public CamionesController(ApplicationDbContext context, IHubContext<ContadorHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // GET: api/Camiones
@@ -92,6 +95,13 @@ namespace Convidarte.Controllers
                 Camion.FechaRegistro = DateTime.Now;
                 Camion.UsuarioRegistro = User?.getUserId();
                 await LCamion.GuardarCamion(Camion, _context);
+
+                if (Camion.EsPropio)
+                {
+                    var message = await LViaje.getDashboard(_context);
+                    await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+                }
+
                 return Json(new { success = true, message = "Camión guardado correctamente" });
             }
             catch (Exception exc)
@@ -119,7 +129,40 @@ namespace Convidarte.Controllers
                 }
 
                 await LCamion.EditarCamion(Camion, _context);
+
+                if (Camion.EsPropio)
+                {
+                    var message = await LViaje.getDashboard(_context);
+                    await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+                }
+
                 return Json(new { success = true, message = "Camión editado correctamente" });
+            }
+            catch (Exception exc)
+            {
+                string ErrorMsg = exc.GetBaseException().InnerException != null ? exc.GetBaseException().InnerException.Message : exc.GetBaseException().Message;
+                return Json(new { success = false, message = "Error!. " + ErrorMsg });
+            }
+        }
+
+        // PUT: api/Camiones/5
+        [HttpPut("CambiarEstadoTaller/{id}")]
+        public async Task<IActionResult> CambiarEstadoTaller([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = ErrorModelValidation.ShowError(new SerializableError(ModelState).Values) });
+            }
+
+            try
+            {
+
+                await LTaller.RealizarMovimientoTaller(id, _context);
+
+                var message = await LViaje.getDashboard(_context);
+                await _hubContext.Clients.All.SendAsync("dashboard", new { success = true, message });
+
+                return Json(new { success = true, message = "Estado actualizado correctamente" });
             }
             catch (Exception exc)
             {

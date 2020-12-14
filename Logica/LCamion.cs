@@ -15,7 +15,7 @@ namespace Logica
 
         public static async Task<List<Camion>> ConsultarCamionesActivos(ApplicationDbContext _context)
         {
-            return await _context.Camiones.Where(x => x.Activo).ToListAsync();
+            return await _context.Camiones.Where(x => x.Activo && x.EstadoTaller == false).ToListAsync();
         }
 
         public static async Task<Camion> ConsultarCamionPorId(int id, ApplicationDbContext _context)
