@@ -240,6 +240,7 @@ namespace Convidarte.Controllers
         }
 
         // POST: api/Viajes/OcupacionDiaria
+        [AllowAnonymous]
         [HttpPost("OcupacionDiaria")]
         public async Task<IActionResult> OcupacionDiaria([FromBody] FiltroViewModel filtro)
         {

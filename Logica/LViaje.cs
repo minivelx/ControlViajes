@@ -98,6 +98,7 @@ namespace Logica
 
         public static async Task<List<OcupacionDiaria>> ConsultarOcupacionDiaria(FiltroViewModel filtro, ApplicationDbContext _context)
         {
+            var lstOcupacion = new List<OcupacionDiaria>();
             DateTime? fechaInicio = filtro?.FechaInicio?.Date ?? null;
             DateTime? fechaFin = filtro?.FechaFin?.Date ?? null;
 
@@ -106,12 +107,28 @@ namespace Logica
                 .Include(x => x.Cliente)
                 .Where(x => x.Fecha >= (fechaInicio != null ? fechaInicio : x.Fecha) &&
                             x.Fecha.Date <= (fechaFin != null ? fechaFin : x.Fecha)).ToListAsync();
-            //hacer logica
 
-            var lstOcupacion = new List<OcupacionDiaria>();
-            lstOcupacion.Add(new OcupacionDiaria { Fecha = new DateTime(2020, 11, 24), NumeroCamionesUtilizados = 1, PorcentajeOcupacion = 0, NumeroViajes = 1 });
-            lstOcupacion.Add(new OcupacionDiaria { Fecha = new DateTime(2020, 11, 26), NumeroCamionesUtilizados = 1, PorcentajeOcupacion = 25, NumeroViajes = 1 });
-            lstOcupacion.Add(new OcupacionDiaria { Fecha = new DateTime(2020, 11, 27), NumeroCamionesUtilizados = 1, PorcentajeOcupacion = 25, NumeroViajes = 1 });
+            var lstCamiones = await _context.Camiones.ToListAsync();
+            var lstDias = lstViajes.GroupBy(x => x.Fecha.Date).ToList();
+
+            foreach (var dia in lstDias)
+            {
+                var viajesDia = lstViajes.Where(x => x.Fecha.Date == dia.Key).ToList();
+
+                var numeroCamionesUtilizados = viajesDia.Select(x => x.Camion.Placa).Distinct().Count();
+
+                var camionesPropiosDia = viajesDia.Where(x=> x.Camion.EsPropio).Select(x=> x.Camion.Placa).Distinct().Count();
+                var totalCamionesPropiosDia = lstCamiones.Where(x => x.EsPropio && x.Activo && (x.FechaRegistro == null || x.FechaRegistro.Value.Date <= dia.Key)).Count();
+                var porcentajeOcupacion = (decimal) camionesPropiosDia / (decimal)totalCamionesPropiosDia;          
+
+                lstOcupacion.Add(new OcupacionDiaria { 
+                    Fecha = dia.Key, 
+                    NumeroCamionesUtilizados = numeroCamionesUtilizados, 
+                    PorcentajeOcupacion = porcentajeOcupacion * 100, 
+                    NumeroViajes = viajesDia.Count
+                });
+            }
+
             return lstOcupacion;
         }
 
@@ -134,7 +151,7 @@ namespace Logica
         {
             var dashboard = new DashboardViewModel();
             var dateNow = DateTime.Now.Date;
-            var lstViajes = await _context.Viajes.Where(x=> x.Fecha.Date == dateNow).Include(x=> x.Camion).Include(x=> x.Cliente).ToListAsync();
+            var lstViajes = await _context.Viajes.Where(x=> x.Fecha.Date == dateNow && x.Camion.EstadoTaller == false).Include(x=> x.Camion).Include(x=> x.Cliente).ToListAsync();
             var acumuladoMes = _context.Viajes.Where(x => x.Fecha.Month == dateNow.Month && x.Fecha.Year == dateNow.Year).Sum(x=> x.ValorAnticipo);
 
             foreach (var item in lstViajes)
@@ -156,10 +173,10 @@ namespace Logica
 
             int totalPropios = _context.Camiones.Where(x => x.Activo == true && x.EsPropio).Count();
             int totalUsados = dashboard.lstVehiculosPropios.GroupBy(x => x.Placa).Count();
-            int totalTaller = _context.Viajes.Where(x => x.Fecha.Date == dateNow && x.NumeroEstado == 0).Include(x => x.Camion).Count();
+            int totalTaller = _context.Camiones.Where(x => x.Activo == true && x.EsPropio && x.EstadoTaller).Count();
 
-            dashboard.lstDatosTorta.Add(totalUsados - totalTaller);
-            dashboard.lstDatosTorta.Add(totalPropios - totalUsados );
+            dashboard.lstDatosTorta.Add(totalUsados );
+            dashboard.lstDatosTorta.Add(totalPropios - totalUsados - totalTaller);
             dashboard.lstDatosTorta.Add(totalTaller);
 
             dashboard.SumaAnticiposDia = (decimal) lstViajes.Sum(x => x.ValorAnticipo);
